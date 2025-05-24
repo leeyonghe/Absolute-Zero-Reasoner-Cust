@@ -30,10 +30,24 @@ from absolute_zero_reasoner.rewards.reward_managers import CodeIORewardManager
 
 @hydra.main(config_path='configs', config_name='azr_ppo_trainer', version_base=None)
 def main(config):
+    """
+    PPO 학습 프로세스의 메인 진입점입니다.
+    Hydra를 사용하여 설정을 관리합니다.
+    
+    매개변수:
+        config: 모든 학습 파라미터를 포함하는 설정 객체
+    """
     run_ppo(config)
 
 
 def run_ppo(config, compute_score=None):
+    """
+    Ray를 초기화하고 PPO 학습 프로세스를 시작합니다.
+    
+    매개변수:
+        config: 모든 학습 파라미터를 포함하는 설정 객체
+        compute_score: 학습 중 점수를 계산하는 선택적 함수
+    """
     if not ray.is_initialized():
         # this is for local ray cluster
         ray.init(address=None, runtime_env={'env_vars': {'TOKENIZERS_PARALLELISM': 'true', 'NCCL_DEBUG': 'WARN'}})
@@ -43,6 +57,14 @@ def run_ppo(config, compute_score=None):
 
 @ray.remote(num_cpus=1)  # please make sure main_task is not scheduled on head
 def main_task(config, compute_score=None):
+    """
+    Ray worker에서 실행되는 메인 학습 태스크입니다.
+    학습 환경을 설정하고, 모델을 초기화하며, 학습 프로세스를 시작합니다.
+    
+    매개변수:
+        config: 모든 학습 파라미터를 포함하는 설정 객체
+        compute_score: 학습 중 점수를 계산하는 선택적 함수
+    """
     pprint(OmegaConf.to_container(config, resolve=True))  # resolve=True will eval symbol values
     OmegaConf.resolve(config)
 

@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.1-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
 
 # 기본 패키지 설치
 RUN apt-get update && apt-get install -y \
@@ -23,7 +23,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 RUN pip3 install --no-cache-dir \
     flash-attn --no-build-isolation \
     vllm==0.7.3 \
-    transformers==4.47.1 \
+    transformers>=4.48.2 \
     "math-verify[antlr4_9_3]" \
     debugpy
 
